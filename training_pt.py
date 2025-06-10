@@ -275,20 +275,20 @@ def main():
     max_prompt_length = model.dims.n_text_ctx // 2 - 1
 
     fp16 = False
-    #train_loader = get_dataloader(
-    #    json=args.train_json,
-    #    tokenizer=tokenizer,
-    #    batch_size=args.batch_size,
-    #    fp16=fp16,
-    #    no_timestamps_training=args.no_timestamps_training,
-    #    max_prompt_length=max_prompt_length,
-    #    prompt_use_rate=1,
-    #    no_timestamps_rate=0.0,
-    #    context_len=args.prompt_length,
-    #    embed_path=args.embed_path,
-    #    shuffle=True,
-    #    n_workers=8,
-    #)
+    train_loader = get_dataloader(
+        json=args.train_json,
+        tokenizer=tokenizer,
+        batch_size=args.batch_size,
+        fp16=fp16,
+        no_timestamps_training=args.no_timestamps_training,
+        max_prompt_length=max_prompt_length,
+        prompt_use_rate=1,
+        no_timestamps_rate=0.0,
+        context_len=args.prompt_length,
+        embed_path=args.embed_path,
+        shuffle=True,
+        n_workers=8,
+    )
 
     prompt_layer = Prompting(
         dim=model.dims.n_text_state,
@@ -306,7 +306,7 @@ def main():
     epoch_cnt = os.getenv('epoch')
     epoch_cnt = int(epoch_cnt)
 
-    """
+    
     if scheduler_type is None:
         scheduler_type =  'step'  
         scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=epoch_cnt // 2, gamma=0.1, verbose=True)
@@ -330,24 +330,24 @@ def main():
         scheduler = REX_LR(optimizer, max_val=1.0, min_val=0.1, num_epochs=epoch_cnt)
     else:
         raise ValueError(f"Unknown scheduler type: {scheduler_type}")    
-    """
+    
             
 
-    #train(
-    #    system=system,
-    #    train_loader=train_loader,
-    #    epochs=epoch_cnt,
-    #    optimizer=optimizer,
-    #    scheduler=scheduler,
-    #    exp_name=args.exp_name,
-    #)
+    train(
+        system=system,
+        train_loader=train_loader,
+        epochs=epoch_cnt,
+        optimizer=optimizer,
+        scheduler=scheduler,
+        exp_name=args.exp_name,
+    )
 
     # After training on clean data, log the transition
-    #wandb.log({"training_phase": "clean_data_complete"})
+    wandb.log({"training_phase": "clean_data_complete"})
 
     train_loader = get_dataloader(
-        #json='./data_utils/data/train-100-noisy.json',
-        json='./data_utils/data/train-100-mixed.json',
+        json='./data_utils/data/train-100-noisy.json',
+        #json='./data_utils/data/train-100-mixed.json', - training on mixed dataset
         tokenizer=tokenizer,
         batch_size=args.batch_size,
         fp16=fp16,
